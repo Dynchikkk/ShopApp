@@ -12,6 +12,10 @@ namespace ShopApp.WebApi.Services
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProductService"/> class.
+        /// </summary>
+        /// <param name="context">The application's database context.</param>
         public ProductService(ApplicationDbContext context)
         {
             _context = context;

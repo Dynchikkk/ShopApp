@@ -12,6 +12,10 @@ namespace ShopApp.WebApi.Services
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CartService"/> class.
+        /// </summary>
+        /// <param name="context">The application's database context.</param>
         public CartService(ApplicationDbContext context)
         {
             _context = context;

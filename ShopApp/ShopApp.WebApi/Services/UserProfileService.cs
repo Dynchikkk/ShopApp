@@ -12,6 +12,10 @@ namespace ShopApp.WebApi.Services
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileService"/> class.
+        /// </summary>
+        /// <param name="context">The application's database context.</param>
         public UserProfileService(ApplicationDbContext context)
         {
             _context = context;
