@@ -74,6 +74,14 @@ namespace ShopApp.WebApi.Repositories
         public async Task<bool> CreateAsync(AuthUser user)
         {
             _ = _context.AuthUsers.Add(user);
+            _ = _context.UserProfiles.Add(new UserProfile
+            {
+                AuthUser = user,
+                FullName = string.Empty,
+                Address = string.Empty,
+                Phone = string.Empty,
+            });
+
             return await _context.SaveChangesAsync() > 0;
         }
 
