@@ -28,5 +28,10 @@ namespace ShopApp.Core.Models.User
         /// </summary>
         [Required]
         public UserRole Role { get; set; } = UserRole.Client;
+
+        /// <summary>
+        /// List of refresh tokens associated with this user.
+        /// </summary>
+        public List<RefreshToken> RefreshTokens { get; set; } = [];
     }
 }

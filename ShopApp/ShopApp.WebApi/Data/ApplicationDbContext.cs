@@ -6,7 +6,7 @@ namespace ShopApp.WebApi.Data
 {
     /// <summary>
     /// Represents the database context for the ShopApp application.
-    /// Provides access to user, profile, product, and cart item entities.
+    /// Provides access to user, profile, product, cart item, and token entities.
     /// </summary>
     /// <remarks>
     /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class using the specified options.
@@ -19,13 +19,19 @@ namespace ShopApp.WebApi.Data
         /// </summary>
         public DbSet<AuthUser> AuthUsers { get; set; }
         /// <summary>
+        /// Gets or sets the refresh tokens for session renewal.
+        /// </summary>
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        /// <summary>
         /// Gets or sets the user profile data.
         /// </summary>
         public DbSet<UserProfile> UserProfiles { get; set; }
+
         /// <summary>
         /// Gets or sets the product catalog.
         /// </summary>
         public DbSet<Product> Products { get; set; }
+
         /// <summary>
         /// Gets or sets the items in user shopping carts.
         /// </summary>
@@ -39,22 +45,35 @@ namespace ShopApp.WebApi.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            _ = modelBuilder.Entity<UserProfile>()
-                .HasOne(up => up.AuthUser)
-                .WithOne()
-                .HasForeignKey<UserProfile>(up => up.AuthUserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+            // CartItem → Product (Many-to-One)
             _ = modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Product)
                 .WithMany()
                 .HasForeignKey(ci => ci.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // CartItem → AuthUser (Many-to-One)
             _ = modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.AuthUser)
                 .WithMany()
                 .HasForeignKey(ci => ci.AuthUserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // UserProfile → AuthUser (One-to-One)
+            _ = modelBuilder.Entity<UserProfile>()
+                .HasOne(up => up.AuthUser)
+                .WithOne()
+                .HasForeignKey<UserProfile>(up => up.AuthUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // RefreshToken → AuthUser (Many-to-One)
+            _ = modelBuilder.Entity<RefreshToken>()
+                .HasOne(rt => rt.AuthUser)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(rt => rt.AuthUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // Ensure uniqueness for refresh token strings
+            _ = modelBuilder.Entity<RefreshToken>()
+                .HasIndex(rt => rt.Token)
+                .IsUnique();
         }
     }
 }

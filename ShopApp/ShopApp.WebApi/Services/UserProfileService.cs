@@ -42,8 +42,8 @@ namespace ShopApp.WebApi.Services
         public async Task<UserProfile> CreateProfileAsync(int userId, UserProfile profile)
         {
             profile.AuthUserId = userId;
-            _context.UserProfiles.Add(profile);
-            await _context.SaveChangesAsync();
+            _ = _context.UserProfiles.Add(profile);
+            _ = await _context.SaveChangesAsync();
             return profile;
         }
 
@@ -67,7 +67,7 @@ namespace ShopApp.WebApi.Services
             existing.Address = updated.Address;
             existing.Phone = updated.Phone;
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
             return existing;
         }
     }

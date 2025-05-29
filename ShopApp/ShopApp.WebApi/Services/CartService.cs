@@ -50,8 +50,8 @@ namespace ShopApp.WebApi.Services
                 Quantity = quantity
             };
 
-            _context.CartItems.Add(cartItem);
-            await _context.SaveChangesAsync();
+            _ = _context.CartItems.Add(cartItem);
+            _ = await _context.SaveChangesAsync();
             return cartItem;
         }
 
@@ -60,19 +60,20 @@ namespace ShopApp.WebApi.Services
         /// </summary>
         /// <param name="userId">The ID of the authenticated user.</param>
         /// <param name="cartItemId">The ID of the cart item to remove.</param>
-        /// <returns>True if removal was successful; otherwise, false.</returns>
-        public async Task<bool> RemoveFromCartAsync(int userId, int cartItemId)
+        /// <returns>Removed cart item if removal was successful; otherwise, null.</returns>
+        public async Task<CartItem?> RemoveFromCartAsync(int userId, int cartItemId)
         {
             CartItem? item = await _context.CartItems
                 .FirstOrDefaultAsync(ci => ci.Id == cartItemId && ci.AuthUserId == userId);
 
-            if (item is null)
+            if (item == null)
             {
-                return false;
+                return null;
             }
 
-            _context.CartItems.Remove(item);
-            return await _context.SaveChangesAsync() > 0;
+            _ = _context.CartItems.Remove(item);
+            _ = await _context.SaveChangesAsync();
+            return item;
         }
     }
 }

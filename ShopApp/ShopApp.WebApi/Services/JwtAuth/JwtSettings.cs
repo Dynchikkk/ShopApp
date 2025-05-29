@@ -1,28 +1,31 @@
 ﻿namespace ShopApp.WebApi.Services.JwtAuth
 {
     /// <summary>
-    /// Represents the JWT configuration settings used for token generation and validation.
+    /// Settings for configuring JWT tokens.
     /// </summary>
     public class JwtSettings
     {
         /// <summary>
-        /// The secret key used to sign JWT tokens.
+        /// Secret key used for signing JWT tokens.
         /// </summary>
-        public string Key { get; set; } = null!;
+        public required string Key { get; set; }
 
         /// <summary>
-        /// The issuer of the JWT token, typically your application's URL or name.
+        /// Token issuer (who issued the token).
         /// </summary>
-        public string Issuer { get; set; } = null!;
+        public required string Issuer { get; set; }
+        /// <summary>
+        /// Token audience (who the token is intended for).
+        /// </summary>
+        public required string Audience { get; set; }
 
         /// <summary>
-        /// The audience that the JWT token is intended for.
+        /// Lifetime of the access token in minutes.
         /// </summary>
-        public string Audience { get; set; } = null!;
-
+        public int AccessTokenLifetimeMinutes { get; set; }
         /// <summary>
-        /// The number of days after which the JWT token will expire.
+        /// Lifetime of the refresh token in minutes.
         /// </summary>
-        public int ExpireDays { get; set; }
+        public int RefreshTokenLifetimeMinutes { get; set; }
     }
 }

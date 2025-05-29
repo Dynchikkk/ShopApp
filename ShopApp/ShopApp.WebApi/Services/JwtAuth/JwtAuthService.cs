@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Repositories;
-using ShopApp.Core.Services;
+using ShopApp.Core.Services.Auth;
+using System.Text.Json;
 
 namespace ShopApp.WebApi.Services.JwtAuth
 {
@@ -12,19 +13,19 @@ namespace ShopApp.WebApi.Services.JwtAuth
     {
         private readonly IUserRepository _userRepo;
         private readonly IPasswordHasher<AuthUser> _hasher;
-        private readonly JwtService _jwt;
+        private readonly IJwtTokenService _tokenService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JwtAuthService"/> class.
         /// </summary>
         /// <param name="userRepo">Repository to interact with user data.</param>
         /// <param name="hasher">Password hasher for securely storing credentials.</param>
-        /// <param name="jwt">Service to generate JWT tokens.</param>
-        public JwtAuthService(IUserRepository userRepo, IPasswordHasher<AuthUser> hasher, JwtService jwt)
+        /// <param name="tokenService">Service to generate JWT tokens.</param>
+        public JwtAuthService(IUserRepository userRepo, IPasswordHasher<AuthUser> hasher, IJwtTokenService tokenService)
         {
             _userRepo = userRepo;
             _hasher = hasher;
-            _jwt = jwt;
+            _tokenService = tokenService;
         }
 
         /// <summary>
@@ -42,7 +43,22 @@ namespace ShopApp.WebApi.Services.JwtAuth
             }
 
             PasswordVerificationResult result = _hasher.VerifyHashedPassword(user, user.PasswordHash, password);
-            return result == PasswordVerificationResult.Failed ? null : _jwt.GenerateToken(user);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return null;
+            }
+
+            string accessToken = _tokenService.GenerateAccessToken(user);
+            RefreshToken refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+
+            user.RefreshTokens.Add(refreshToken);
+            _ = await _userRepo.UpdateAsync(user);
+
+            return JsonSerializer.Serialize(new
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken.Token
+            });
         }
 
         /// <summary>

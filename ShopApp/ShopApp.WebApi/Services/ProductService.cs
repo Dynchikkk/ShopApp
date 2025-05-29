@@ -47,8 +47,8 @@ namespace ShopApp.WebApi.Services
         /// <returns>The created product.</returns>
         public async Task<Product> CreateAsync(Product product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            _ = _context.Products.Add(product);
+            _ = await _context.SaveChangesAsync();
             return product;
         }
 
@@ -71,7 +71,7 @@ namespace ShopApp.WebApi.Services
             product.Stock = updated.Stock;
             product.Description = updated.Description;
 
-            await _context.SaveChangesAsync();
+            _ = await _context.SaveChangesAsync();
             return product;
         }
 
@@ -88,8 +88,8 @@ namespace ShopApp.WebApi.Services
                 return null;
             }
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            _ = _context.Products.Remove(product);
+            _ = await _context.SaveChangesAsync();
             return product;
         }
     }

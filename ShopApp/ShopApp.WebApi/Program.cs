@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Repositories;
 using ShopApp.Core.Services;
+using ShopApp.Core.Services.Auth;
 using ShopApp.WebApi.Data;
 using ShopApp.WebApi.Repositories;
 using ShopApp.WebApi.Services;
@@ -22,7 +23,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 // JWT
-builder.Services.AddSingleton<JwtService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IPasswordHasher<AuthUser>, PasswordHasher<AuthUser>>();
 builder.Services.AddScoped<IAuthService, JwtAuthService>();
 // REPOS

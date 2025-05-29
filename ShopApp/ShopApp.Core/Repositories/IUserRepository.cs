@@ -3,29 +3,53 @@
 namespace ShopApp.Core.Repositories
 {
     /// <summary>
-    /// Defines operations for managing authentication users in the data source.
+    /// Defines the contract for user-related data operations.
     /// </summary>
     public interface IUserRepository
     {
         /// <summary>
-        /// Finds an authentication user by their username.
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="id">The ID of the user to retrieve.</param>
+        /// <returns>The user if found; otherwise, null.</returns>
+        Task<AuthUser?> FindByIdAsync(int id);
+        /// <summary>
+        /// Retrieves a user by their username.
         /// </summary>
         /// <param name="username">The username to search for.</param>
-        /// <returns>The matching <see cref="AuthUser"/> if found; otherwise, null.</returns>
+        /// <returns>The user if found; otherwise, null.</returns>
         Task<AuthUser?> FindByUsernameAsync(string username);
+        /// <summary>
+        /// Retrieves all users in the system.
+        /// </summary>
+        /// <returns>A collection of all users.</returns>
+        Task<IEnumerable<AuthUser>> GetAllAsync();
+        /// <summary>
+        /// Determines whether a user with the specified username already exists.
+        /// </summary>
+        /// <param name="username">The username to check.</param>
+        /// <returns>True if the user exists; otherwise, false.</returns>
+        Task<bool> UserExistsAsync(string username);
 
         /// <summary>
-        /// Creates a new authentication user in the data source.
+        /// Creates a new user in the data store.
         /// </summary>
-        /// <param name="user">The user to create.</param>
-        /// <returns>True if creation was successful; otherwise, false.</returns>
+        /// <param name="user">The user entity to create.</param>
+        /// <returns>True if the operation succeeds; otherwise, false.</returns>
         Task<bool> CreateAsync(AuthUser user);
 
         /// <summary>
-        /// Checks if a user with the specified username already exists.
+        /// Updates the specified user in the data store.
         /// </summary>
-        /// <param name="username">The username to check for existence.</param>
-        /// <returns>True if the user exists; otherwise, false.</returns>
-        Task<bool> UserExistsAsync(string username);
+        /// <param name="user">The user entity to update.</param>
+        /// <returns>True if the update succeeds; otherwise, false.</returns>
+        Task<bool> UpdateAsync(AuthUser user);
+
+        /// <summary>
+        /// Deletes a user by their unique identifier.
+        /// </summary>
+        /// <param name="id">The ID of the user to delete.</param>
+        /// <returns>True if the deletion succeeds; otherwise, false.</returns>
+        Task<bool> DeleteAsync(int id);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace ShopApp.Core.Services
+﻿namespace ShopApp.Core.Services.Auth
 {
     /// <summary>
     /// Defines authentication operations for login and registration.
