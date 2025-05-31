@@ -1,26 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using ShopApp.Core.Dto.Auth;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Repositories;
 using ShopApp.Core.Services.Auth;
-using System.Text.Json;
 
 namespace ShopApp.WebApi.Services.JwtAuth
 {
-    /// <summary>
-    /// Service responsible for user authentication and registration using JWT.
-    /// </summary>
     public class JwtAuthService : IAuthService
     {
         private readonly IUserRepository _userRepo;
         private readonly IPasswordHasher<AuthUser> _hasher;
         private readonly IJwtTokenService _tokenService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JwtAuthService"/> class.
-        /// </summary>
-        /// <param name="userRepo">Repository to interact with user data.</param>
-        /// <param name="hasher">Password hasher for securely storing credentials.</param>
-        /// <param name="tokenService">Service to generate JWT tokens.</param>
         public JwtAuthService(IUserRepository userRepo, IPasswordHasher<AuthUser> hasher, IJwtTokenService tokenService)
         {
             _userRepo = userRepo;
@@ -28,60 +19,82 @@ namespace ShopApp.WebApi.Services.JwtAuth
             _tokenService = tokenService;
         }
 
-        /// <summary>
-        /// Attempts to log in a user with the specified credentials.
-        /// </summary>
-        /// <param name="username">The user's username.</param>
-        /// <param name="password">The user's password.</param>
-        /// <returns>JWT token if credentials are valid; otherwise, null.</returns>
-        public async Task<string?> LoginAsync(string username, string password)
+        public async Task<AuthUser?> RegisterAsync(UserDto request)
         {
-            AuthUser? user = await _userRepo.FindByUsernameAsync(username);
+            if (await _userRepo.UserExistsAsync(request.Username))
+            {
+                return null;
+            }
+
+            AuthUser user = new()
+            {
+                Username = request.Username,
+                PasswordHash = _hasher.HashPassword(null!, request.Password),
+                Role = UserRole.Client,
+                RefreshTokens = []
+            };
+
+            bool created = await _userRepo.CreateAsync(user);
+            return created ? user : null;
+        }
+
+        public async Task<TokenResponseDto?> LoginAsync(UserDto request)
+        {
+            AuthUser? user = await _userRepo.FindByUsernameAsync(request.Username);
             if (user == null)
             {
                 return null;
             }
 
-            PasswordVerificationResult result = _hasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            PasswordVerificationResult result = _hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
             if (result == PasswordVerificationResult.Failed)
             {
                 return null;
             }
 
-            string accessToken = _tokenService.GenerateAccessToken(user);
-            RefreshToken refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+            string access = _tokenService.GenerateAccessToken(user);
+            RefreshToken refresh = _tokenService.GenerateRefreshToken(user.Id);
 
-            user.RefreshTokens.Add(refreshToken);
+            user.RefreshTokens.Add(refresh);
             _ = await _userRepo.UpdateAsync(user);
 
-            return JsonSerializer.Serialize(new
+            return new TokenResponseDto
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken.Token
-            });
+                AccessToken = access,
+                RefreshToken = refresh.Token
+            };
         }
 
-        /// <summary>
-        /// Registers a new user with the provided credentials.
-        /// </summary>
-        /// <param name="username">Desired username.</param>
-        /// <param name="password">Desired password.</param>
-        /// <returns>True if registration is successful; otherwise, false.</returns>
-        public async Task<bool> RegisterAsync(string username, string password)
+        public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
         {
-            if (await _userRepo.UserExistsAsync(username))
+            AuthUser? user = await _userRepo.FindByIdAsync(request.UserId);
+            if (user == null)
             {
-                return false;
+                return null;
             }
 
-            AuthUser user = new()
-            {
-                Username = username,
-                PasswordHash = _hasher.HashPassword(null!, password),
-                Role = UserRole.Client
-            };
+            RefreshToken? token = user.RefreshTokens.FirstOrDefault(r =>
+                r.Token == request.RefreshToken &&
+                !r.IsRevoked &&
+                r.ExpiresAt > DateTime.UtcNow);
 
-            return await _userRepo.CreateAsync(user);
+            if (token == null)
+            {
+                return null;
+            }
+
+            string access = _tokenService.GenerateAccessToken(user);
+            RefreshToken refresh = _tokenService.GenerateRefreshToken(user.Id);
+
+            user.RefreshTokens.Add(refresh);
+            token.IsRevoked = true;
+            _ = await _userRepo.UpdateAsync(user);
+
+            return new TokenResponseDto
+            {
+                AccessToken = access,
+                RefreshToken = refresh.Token
+            };
         }
     }
 }
