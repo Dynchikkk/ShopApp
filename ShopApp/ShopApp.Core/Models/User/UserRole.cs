@@ -6,12 +6,13 @@
     public enum UserRole
     {
         /// <summary>
-        /// Administrator role with elevated permissions.
+        /// Administrator role with full access.
         /// </summary>
-        Admin = 0,
+        Admin,
+
         /// <summary>
-        /// Standard client role.
+        /// Standard client role with limited access.
         /// </summary>
-        Client = 1
+        Client
     }
 }

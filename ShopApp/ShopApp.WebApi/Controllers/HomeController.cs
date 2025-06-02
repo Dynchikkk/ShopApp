@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ShopApp.WebApi.Controllers
 {
+    /// <summary>
+    /// Basic controller for health check and base routing.
+    /// </summary>
     [ApiController]
     [Route("")]
     public class HomeController : ControllerBase
