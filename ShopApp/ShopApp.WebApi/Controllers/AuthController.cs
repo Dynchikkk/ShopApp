@@ -16,10 +16,6 @@ namespace ShopApp.WebApi.Controllers
     {
         private readonly IAuthService _authService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthController"/> class.
-        /// </summary>
-        /// <param name="authService">Service responsible for authentication and token logic.</param>
         public AuthController(IAuthService authService)
         {
             _authService = authService;
@@ -28,38 +24,37 @@ namespace ShopApp.WebApi.Controllers
         /// <summary>
         /// Registers a new user with the provided credentials.
         /// </summary>
-        /// <param name="request">The user's registration data (username and password).</param>
-        /// <returns>The newly created user or a bad request if the username already exists.</returns>
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<AuthUser>> Register(UserDto request)
+        public async Task<ActionResult<UserResponseDto>> Register(UserDto request)
         {
             AuthUser? user = await _authService.RegisterAsync(request);
-            return user == null ?
-                BadRequest("Username already exists.") :
-                Ok(user);
+            return user == null
+                ? BadRequest("Username already exists.")
+                : Ok(new UserResponseDto
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Role = user.Role.ToString()
+                });
         }
 
         /// <summary>
         /// Authenticates the user and returns a JWT access token along with a refresh token.
         /// </summary>
-        /// <param name="request">The user's login credentials.</param>
-        /// <returns>Token response DTO or a bad request if authentication fails.</returns>
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
         {
             TokenResponseDto? result = await _authService.LoginAsync(request);
-            return result == null ?
-                BadRequest("Invalid username or password.") :
-                Ok(result);
+            return result == null
+                ? BadRequest("Invalid username or password.")
+                : Ok(result);
         }
 
         /// <summary>
         /// Refreshes the access token using a valid refresh token.
         /// </summary>
-        /// <param name="request">The refresh token request containing user ID and refresh token.</param>
-        /// <returns>A new token pair or unauthorized if the refresh token is invalid or doesn't match the user.</returns>
         [Authorize]
         [HttpPost("refresh-token")]
         public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
@@ -72,9 +67,9 @@ namespace ShopApp.WebApi.Controllers
             }
 
             TokenResponseDto? result = await _authService.RefreshTokensAsync(request);
-            return result == null ?
-                Unauthorized("Invalid refresh token.") :
-                Ok(result);
+            return result == null
+                ? Unauthorized("Invalid refresh token.")
+                : Ok(result);
         }
     }
 }
