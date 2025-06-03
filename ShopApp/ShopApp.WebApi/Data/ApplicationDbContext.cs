@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShopApp.Core.Models.Shop;
+using ShopApp.Core.Models.Shop.Order;
 using ShopApp.Core.Models.User;
 
 namespace ShopApp.WebApi.Data
@@ -37,6 +38,9 @@ namespace ShopApp.WebApi.Data
         /// </summary>
         public DbSet<CartItem> CartItems { get; set; }
 
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+
         /// <summary>
         /// Configures the relationships and model settings.
         /// </summary>
@@ -44,6 +48,12 @@ namespace ShopApp.WebApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            _ = modelBuilder.Entity<Order>()
+                .HasMany(o => o.Items)
+                .WithOne(i => i.Order)
+                .HasForeignKey(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // CartItem → Product (Many-to-One)
             _ = modelBuilder.Entity<CartItem>()
