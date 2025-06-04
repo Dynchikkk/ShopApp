@@ -3,7 +3,7 @@
     /// <summary>
     /// Data transfer object for adding a product to the user's shopping cart.
     /// </summary>
-    public class AddToCartDto
+    public class CartAddItemRequestDto
     {
         /// <summary>
         /// The identifier of the product to add to the cart.

@@ -9,6 +9,6 @@
         public string DeliveryAddress { get; set; } = null!;
         public DateTime DeliveryDate { get; set; }
         public DateTime CreatedAt { get; set; }
-        public List<OrderItemDto> Items { get; set; } = [];
+        public List<OrderItemResponseDto> Items { get; set; } = [];
     }
 }

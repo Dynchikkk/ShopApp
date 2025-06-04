@@ -9,6 +9,6 @@ namespace ShopApp.Core.Services
     public interface IOrderService
     {
         Task<IEnumerable<Order>> GetOrdersAsync(int userId);
-        Task<Order?> CreateOrderAsync(int userId, CreateOrderRequestDto dto);
+        Task<Order?> CreateOrderAsync(int userId, OrderCreateRequestDto dto);
     }
 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// DTO representing an item within an order.
     /// </summary>
-    public class OrderItemDto
+    public class OrderItemResponseDto
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; } = null!;

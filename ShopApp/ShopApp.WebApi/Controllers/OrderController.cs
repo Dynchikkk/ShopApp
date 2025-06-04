@@ -27,7 +27,7 @@ namespace ShopApp.WebApi.Controllers
         /// Places a new order using the current user's cart.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<OrderResponseDto>> CreateOrder(CreateOrderRequestDto dto)
+        public async Task<ActionResult<OrderResponseDto>> CreateOrder(OrderCreateRequestDto dto)
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
@@ -60,7 +60,7 @@ namespace ShopApp.WebApi.Controllers
                 DeliveryAddress = order.DeliveryAddress,
                 DeliveryDate = order.DeliveryDate,
                 CreatedAt = order.CreatedAt,
-                Items = order.Items.Select(i => new OrderItemDto
+                Items = order.Items.Select(i => new OrderItemResponseDto
                 {
                     ProductId = i.ProductId,
                     ProductName = i.ProductName,

@@ -27,7 +27,7 @@ namespace ShopApp.WebApi.Services
                 .ToListAsync();
         }
 
-        public async Task<Order?> CreateOrderAsync(int userId, CreateOrderRequestDto dto)
+        public async Task<Order?> CreateOrderAsync(int userId, OrderCreateRequestDto dto)
         {
             List<Core.Models.Shop.CartItem> cartItems = await _context.CartItems
                 .Include(ci => ci.Product)

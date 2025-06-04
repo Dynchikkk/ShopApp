@@ -1,9 +1,9 @@
-﻿namespace ShopApp.Core.Dto
+﻿namespace ShopApp.Core.Dto.Product
 {
     /// <summary>
     /// Data transfer object for creating or updating product information.
     /// </summary>
-    public class ProductDto
+    public class ProductResponseDto
     {
         /// <summary>
         /// The name of the product.
