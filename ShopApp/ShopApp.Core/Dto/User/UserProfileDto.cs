@@ -1,4 +1,4 @@
-﻿namespace ShopApp.Core.Dto
+﻿namespace ShopApp.Core.Dto.User
 {
     /// <summary>
     /// Data transfer object for transferring user profile information.

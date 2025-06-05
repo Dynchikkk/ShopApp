@@ -5,6 +5,8 @@
     /// </summary>
     public class ProductResponseDto
     {
+        public int Id { get; set; }
+
         /// <summary>
         /// The name of the product.
         /// </summary>

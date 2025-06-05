@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using ShopApp.Core.Dto.Auth;
+using ShopApp.Core.Dto.User.Auth;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Repositories;
-using ShopApp.Core.Services.Auth;
+using ShopApp.Core.Services.User.Auth;
 
 namespace ShopApp.WebApi.Services.JwtAuth
 {

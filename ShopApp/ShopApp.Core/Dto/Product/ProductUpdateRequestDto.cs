@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ShopApp.Core.Dto.Product
+﻿namespace ShopApp.Core.Dto.Product
 {
     /// <summary>
     /// Request DTO for updating an existing product.

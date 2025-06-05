@@ -1,7 +1,7 @@
-﻿using ShopApp.Core.Dto.Auth;
+﻿using ShopApp.Core.Dto.User.Auth;
 using ShopApp.Core.Models.User;
 
-namespace ShopApp.Core.Services.Auth
+namespace ShopApp.Core.Services.User.Auth
 {
     /// <summary>
     /// Defines the authentication and authorization operations for users.

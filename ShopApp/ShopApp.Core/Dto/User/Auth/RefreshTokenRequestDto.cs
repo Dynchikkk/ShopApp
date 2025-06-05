@@ -1,4 +1,4 @@
-﻿namespace ShopApp.Core.Dto.Auth
+﻿namespace ShopApp.Core.Dto.User.Auth
 {
     /// <summary>
     /// Data transfer object for requesting a new access token using a refresh token.

@@ -1,4 +1,4 @@
-﻿namespace ShopApp.Core.Dto
+﻿namespace ShopApp.Core.Dto.Cart
 {
     /// <summary>
     /// Data transfer object for adding a product to the user's shopping cart.

@@ -1,4 +1,4 @@
-﻿namespace ShopApp.Core.Dto.Auth
+﻿namespace ShopApp.Core.Dto.User.Auth
 {
     public class UserResponseDto
     {

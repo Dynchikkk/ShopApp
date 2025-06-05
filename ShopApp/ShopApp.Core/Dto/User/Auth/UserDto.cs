@@ -1,4 +1,4 @@
-﻿namespace ShopApp.Core.Dto.Auth
+﻿namespace ShopApp.Core.Dto.User.Auth
 {
     /// <summary>
     /// Data transfer object for user authentication and registration.

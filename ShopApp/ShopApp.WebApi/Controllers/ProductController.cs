@@ -25,7 +25,7 @@ namespace ShopApp.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetAll()
         {
-            var products = await _productService.GetAllAsync();
+            IEnumerable<Product> products = await _productService.GetAllAsync();
             return Ok(products.Select(MapToResponseDto));
         }
 
@@ -33,7 +33,7 @@ namespace ShopApp.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ProductResponseDto>> GetById(int id)
         {
-            var product = await _productService.GetByIdAsync(id);
+            Product? product = await _productService.GetByIdAsync(id);
             return product == null ? NotFound("Product not found.") : Ok(MapToResponseDto(product));
         }
 
@@ -41,7 +41,7 @@ namespace ShopApp.WebApi.Controllers
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult<ProductResponseDto>> Create(ProductCreateRequestDto dto)
         {
-            var created = await _productService.CreateAsync(new Product
+            Product created = await _productService.CreateAsync(new Product
             {
                 Name = dto.Name,
                 Price = dto.Price,
@@ -56,7 +56,7 @@ namespace ShopApp.WebApi.Controllers
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult<ProductResponseDto>> Update(int id, ProductUpdateRequestDto dto)
         {
-            var updated = await _productService.UpdateAsync(id, new Product
+            Product? updated = await _productService.UpdateAsync(id, new Product
             {
                 Name = dto.Name,
                 Price = dto.Price,
@@ -71,17 +71,20 @@ namespace ShopApp.WebApi.Controllers
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult<ProductResponseDto>> Delete(int id)
         {
-            var deleted = await _productService.DeleteAsync(id);
+            Product? deleted = await _productService.DeleteAsync(id);
             return deleted == null ? NotFound("Product not found.") : Ok(MapToResponseDto(deleted));
         }
 
-        private static ProductResponseDto MapToResponseDto(Product product) => new()
+        private static ProductResponseDto MapToResponseDto(Product product)
         {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Stock = product.Stock,
-            Description = product.Description
-        };
+            return new()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                Description = product.Description
+            };
+        }
     }
 }

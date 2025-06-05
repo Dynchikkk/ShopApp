@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShopApp.Core.Models.User;
-using ShopApp.Core.Services;
+using ShopApp.Core.Services.User;
 using ShopApp.WebApi.Data;
 
 namespace ShopApp.WebApi.Services

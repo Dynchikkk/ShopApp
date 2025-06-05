@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApp.Core.Dto.Auth;
+using ShopApp.Core.Dto.User.Auth;
 using ShopApp.Core.Models.User;
-using ShopApp.Core.Services.Auth;
+using ShopApp.Core.Services.User.Auth;
 using System.Security.Claims;
 
 namespace ShopApp.WebApi.Controllers

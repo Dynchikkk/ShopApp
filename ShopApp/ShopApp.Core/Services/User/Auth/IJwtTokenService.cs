@@ -1,6 +1,6 @@
 ﻿using ShopApp.Core.Models.User;
 
-namespace ShopApp.Core.Services.Auth
+namespace ShopApp.Core.Services.User.Auth
 {
     /// <summary>
     /// Provides functionality for generating JWT access tokens and secure refresh tokens.

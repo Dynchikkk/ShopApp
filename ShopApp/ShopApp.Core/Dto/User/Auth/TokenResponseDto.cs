@@ -1,4 +1,4 @@
-﻿namespace ShopApp.Core.Dto.Auth
+﻿namespace ShopApp.Core.Dto.User.Auth
 {
     /// <summary>
     /// Data transfer object representing a pair of JWT access and refresh tokens.

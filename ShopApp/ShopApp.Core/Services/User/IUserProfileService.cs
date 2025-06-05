@@ -1,6 +1,6 @@
 ﻿using ShopApp.Core.Models.User;
 
-namespace ShopApp.Core.Services
+namespace ShopApp.Core.Services.User
 {
     /// <summary>
     /// Defines operations for managing user profile data.
