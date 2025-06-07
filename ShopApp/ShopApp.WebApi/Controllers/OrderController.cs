@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace ShopApp.WebApi.Controllers
 {
     /// <summary>
-    /// Handles customer order creation and history.
+    /// Handles customer order creation and order history retrieval.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -18,6 +18,9 @@ namespace ShopApp.WebApi.Controllers
     {
         private readonly IOrderService _orderService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrderController"/> class.
+        /// </summary>
         public OrderController(IOrderService orderService)
         {
             _orderService = orderService;
@@ -26,31 +29,34 @@ namespace ShopApp.WebApi.Controllers
         /// <summary>
         /// Places a new order using the current user's cart.
         /// </summary>
+        /// <param name="dto">The delivery details for the order.</param>
+        /// <returns>The created order or error if validation fails.</returns>
         [HttpPost]
         public async Task<ActionResult<OrderResponseDto>> CreateOrder(OrderCreateRequestDto dto)
         {
-            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
+            int userId = GetCurrentUserId();
             Order? order = await _orderService.CreateOrderAsync(userId, dto);
+
             return order == null
                 ? BadRequest("Cannot place order. Check cart and stock.")
                 : Ok(MapToDto(order));
         }
 
         /// <summary>
-        /// Returns the current user's order history.
+        /// Retrieves a list of all orders placed by the current user.
         /// </summary>
+        /// <returns>A list of order DTOs.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderResponseDto>>> GetOrders()
         {
-            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
+            int userId = GetCurrentUserId();
             IEnumerable<Order> orders = await _orderService.GetOrdersAsync(userId);
+
             return Ok(orders.Select(MapToDto));
         }
 
         /// <summary>
-        /// Maps Order entity to DTO.
+        /// Maps an <see cref="Order"/> entity to its corresponding DTO.
         /// </summary>
         private static OrderResponseDto MapToDto(Order order)
         {
@@ -68,6 +74,14 @@ namespace ShopApp.WebApi.Controllers
                     Quantity = i.Quantity
                 }).ToList()
             };
+        }
+
+        /// <summary>
+        /// Retrieves the current authenticated user's ID from the JWT claims.
+        /// </summary>
+        private int GetCurrentUserId()
+        {
+            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         }
     }
 }

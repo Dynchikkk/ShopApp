@@ -21,7 +21,6 @@ namespace ShopApp.WebApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileController"/> class.
         /// </summary>
-        /// <param name="profileService">Service for accessing and modifying user profiles.</param>
         public ProfileController(IUserProfileService profileService)
         {
             _profileService = profileService;
@@ -30,7 +29,7 @@ namespace ShopApp.WebApi.Controllers
         /// <summary>
         /// Retrieves the profile of the currently authenticated user.
         /// </summary>
-        /// <returns>The user's profile data, or 404 if not found.</returns>
+        /// <returns>The user's profile or 404 if not found.</returns>
         [HttpGet]
         public async Task<ActionResult<UserProfileDto>> GetProfile()
         {
@@ -38,8 +37,8 @@ namespace ShopApp.WebApi.Controllers
 
             UserProfile? profile = await _profileService.GetProfileAsync(userId);
             return profile == null
-                ? (ActionResult<UserProfileDto>)NotFound("Profile not found.")
-                : (ActionResult<UserProfileDto>)Ok(new UserProfileDto
+                ? NotFound("Profile not found.")
+                : Ok(new UserProfileDto
                 {
                     FullName = profile.FullName,
                     Address = profile.Address,
@@ -48,10 +47,10 @@ namespace ShopApp.WebApi.Controllers
         }
 
         /// <summary>
-        /// Updates the profile information of the currently authenticated user.
+        /// Updates the authenticated user's profile with new information.
         /// </summary>
-        /// <param name="dto">The updated profile data.</param>
-        /// <returns>The updated profile, or 404 if not found.</returns>
+        /// <param name="dto">The updated profile information.</param>
+        /// <returns>The updated profile or 404 if not found.</returns>
         [HttpPut]
         public async Task<ActionResult<UserProfileDto>> UpdateProfile([FromBody] UserProfileDto dto)
         {
@@ -65,8 +64,8 @@ namespace ShopApp.WebApi.Controllers
             });
 
             return updated == null
-                ? (ActionResult<UserProfileDto>)NotFound("Profile not found or could not be updated.")
-                : (ActionResult<UserProfileDto>)Ok(new UserProfileDto
+                ? NotFound("Profile not found or could not be updated.")
+                : Ok(new UserProfileDto
                 {
                     FullName = updated.FullName,
                     Address = updated.Address,

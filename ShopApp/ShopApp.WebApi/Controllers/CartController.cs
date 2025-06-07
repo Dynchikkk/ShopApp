@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApp.Core.Dto.Cart;
+using ShopApp.Core.Models.Shop;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Services;
 using System.Security.Claims;
@@ -17,6 +18,9 @@ namespace ShopApp.WebApi.Controllers
     {
         private readonly ICartService _cartService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CartController"/> class.
+        /// </summary>
         public CartController(ICartService cartService)
         {
             _cartService = cartService;
@@ -25,11 +29,12 @@ namespace ShopApp.WebApi.Controllers
         /// <summary>
         /// Retrieves all items currently in the user's cart.
         /// </summary>
+        /// <returns>A list of cart items.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CartItemResponseDto>>> GetCart()
         {
             int userId = GetCurrentUserId();
-            IEnumerable<Core.Models.Shop.CartItem> cart = await _cartService.GetCartAsync(userId);
+            IEnumerable<CartItem> cart = await _cartService.GetCartAsync(userId);
 
             return Ok(cart.Select(ci => new CartItemResponseDto
             {
@@ -44,14 +49,17 @@ namespace ShopApp.WebApi.Controllers
         /// <summary>
         /// Adds a product to the user's cart.
         /// </summary>
+        /// <param name="request">The product ID and quantity to add.</param>
+        /// <returns>The added cart item or an error.</returns>
         [HttpPost]
         public async Task<ActionResult<CartItemResponseDto>> AddToCart([FromBody] CartAddItemRequestDto request)
         {
             int userId = GetCurrentUserId();
-            Core.Models.Shop.CartItem? item = await _cartService.AddToCartAsync(userId, request.ProductId, request.Quantity);
+            CartItem? item = await _cartService.AddToCartAsync(userId, request.ProductId, request.Quantity);
+
             return item == null
-                ? (ActionResult<CartItemResponseDto>)BadRequest("Product not found or quantity invalid.")
-                : (ActionResult<CartItemResponseDto>)Ok(new CartItemResponseDto
+                ? BadRequest("Product not found or quantity invalid.")
+                : Ok(new CartItemResponseDto
                 {
                     Id = item.Id,
                     ProductId = item.ProductId,
@@ -62,16 +70,19 @@ namespace ShopApp.WebApi.Controllers
         }
 
         /// <summary>
-        /// Removes an item from the user's cart.
+        /// Removes an item from the user's cart by its ID.
         /// </summary>
+        /// <param name="id">The ID of the cart item to remove.</param>
+        /// <returns>The removed cart item or not found.</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<CartItemResponseDto>> RemoveFromCart(int id)
         {
             int userId = GetCurrentUserId();
-            Core.Models.Shop.CartItem? removed = await _cartService.RemoveFromCartAsync(userId, id);
+            CartItem? removed = await _cartService.RemoveFromCartAsync(userId, id);
+
             return removed == null
-                ? (ActionResult<CartItemResponseDto>)NotFound("Cart item not found.")
-                : (ActionResult<CartItemResponseDto>)Ok(new CartItemResponseDto
+                ? NotFound("Cart item not found.")
+                : Ok(new CartItemResponseDto
                 {
                     Id = removed.Id,
                     ProductId = removed.ProductId,
@@ -81,6 +92,9 @@ namespace ShopApp.WebApi.Controllers
                 });
         }
 
+        /// <summary>
+        /// Retrieves the current authenticated user's ID from the JWT claims.
+        /// </summary>
         private int GetCurrentUserId()
         {
             return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");

@@ -16,11 +16,18 @@ namespace ShopApp.WebApi.Controllers
     {
         private readonly IProductService _productService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProductController"/> class.
+        /// </summary>
         public ProductController(IProductService productService)
         {
             _productService = productService;
         }
 
+        /// <summary>
+        /// Retrieves all available products.
+        /// </summary>
+        /// <returns>A list of <see cref="ProductResponseDto"/>.</returns>
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetAll()
@@ -29,6 +36,11 @@ namespace ShopApp.WebApi.Controllers
             return Ok(products.Select(MapToResponseDto));
         }
 
+        /// <summary>
+        /// Retrieves a specific product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product.</param>
+        /// <returns>A <see cref="ProductResponseDto"/> or 404 if not found.</returns>
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult<ProductResponseDto>> GetById(int id)
@@ -37,6 +49,11 @@ namespace ShopApp.WebApi.Controllers
             return product == null ? NotFound("Product not found.") : Ok(MapToResponseDto(product));
         }
 
+        /// <summary>
+        /// Creates a new product. Accessible only to Admins.
+        /// </summary>
+        /// <param name="dto">The product creation request.</param>
+        /// <returns>The created <see cref="ProductResponseDto"/> with 201 Created status.</returns>
         [HttpPost]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult<ProductResponseDto>> Create(ProductCreateRequestDto dto)
@@ -52,6 +69,12 @@ namespace ShopApp.WebApi.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, MapToResponseDto(created));
         }
 
+        /// <summary>
+        /// Updates an existing product by ID. Accessible only to Admins.
+        /// </summary>
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="dto">The product update request.</param>
+        /// <returns>The updated <see cref="ProductResponseDto"/> or 404 if not found.</returns>
         [HttpPut("{id}")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult<ProductResponseDto>> Update(int id, ProductUpdateRequestDto dto)
@@ -67,6 +90,11 @@ namespace ShopApp.WebApi.Controllers
             return updated == null ? NotFound("Product not found.") : Ok(MapToResponseDto(updated));
         }
 
+        /// <summary>
+        /// Deletes a product by ID. Accessible only to Admins.
+        /// </summary>
+        /// <param name="id">The ID of the product to delete.</param>
+        /// <returns>The deleted <see cref="ProductResponseDto"/> or 404 if not found.</returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<ActionResult<ProductResponseDto>> Delete(int id)
@@ -75,6 +103,9 @@ namespace ShopApp.WebApi.Controllers
             return deleted == null ? NotFound("Product not found.") : Ok(MapToResponseDto(deleted));
         }
 
+        /// <summary>
+        /// Maps a <see cref="Product"/> entity to its DTO representation.
+        /// </summary>
         private static ProductResponseDto MapToResponseDto(Product product)
         {
             return new()

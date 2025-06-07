@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace ShopApp.WebApi.Controllers
 {
     /// <summary>
-    /// Controller for handling user authentication and token management.
+    /// Controller for handling user authentication, registration, and JWT token management.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -16,14 +16,23 @@ namespace ShopApp.WebApi.Controllers
     {
         private readonly IAuthService _authService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthController"/> class.
+        /// </summary>
+        /// <param name="authService">The authentication service to handle user and token logic.</param>
         public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
 
         /// <summary>
-        /// Registers a new user with the provided credentials.
+        /// Registers a new user using provided username and password credentials.
         /// </summary>
+        /// <param name="request">User registration request containing username and password.</param>
+        /// <returns>
+        /// A <see cref="UserResponseDto"/> representing the newly created user on success,
+        /// or 400 BadRequest if the username already exists.
+        /// </returns>
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<UserResponseDto>> Register(UserDto request)
@@ -40,8 +49,13 @@ namespace ShopApp.WebApi.Controllers
         }
 
         /// <summary>
-        /// Authenticates the user and returns a JWT access token along with a refresh token.
+        /// Authenticates a user and returns an access token along with a refresh token if successful.
         /// </summary>
+        /// <param name="request">Login credentials (username and password).</param>
+        /// <returns>
+        /// A <see cref="TokenResponseDto"/> containing the JWT access and refresh tokens,
+        /// or 400 BadRequest if the credentials are invalid.
+        /// </returns>
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
@@ -53,8 +67,13 @@ namespace ShopApp.WebApi.Controllers
         }
 
         /// <summary>
-        /// Refreshes the access token using a valid refresh token.
+        /// Refreshes JWT tokens using a valid and unexpired refresh token.
         /// </summary>
+        /// <param name="request">The refresh token request containing user ID and refresh token.</param>
+        /// <returns>
+        /// A <see cref="TokenResponseDto"/> with new access and refresh tokens if successful,
+        /// or 401 Unauthorized if validation fails.
+        /// </returns>
         [Authorize]
         [HttpPost("refresh-token")]
         public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)

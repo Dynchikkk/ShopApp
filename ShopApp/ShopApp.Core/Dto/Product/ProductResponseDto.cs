@@ -1,10 +1,13 @@
 ﻿namespace ShopApp.Core.Dto.Product
 {
     /// <summary>
-    /// Data transfer object for creating or updating product information.
+    /// Represents product information returned to the client.
     /// </summary>
     public class ProductResponseDto
     {
+        /// <summary>
+        /// Unique identifier of the product.
+        /// </summary>
         public int Id { get; set; }
 
         /// <summary>
