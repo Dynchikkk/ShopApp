@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShopApp.Core.Dto.User;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Services.User;
-using System.Security.Claims;
+using ShopApp.WebApi.Extensions;
 
 namespace ShopApp.WebApi.Controllers
 {
@@ -33,7 +33,11 @@ namespace ShopApp.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<UserProfileDto>> GetProfile()
         {
-            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            int userId = User.GetUserId();
+            if (userId < 0)
+            {
+                return Unauthorized("Token does not match current user.");
+            }
 
             UserProfile? profile = await _profileService.GetProfileAsync(userId);
             return profile == null
@@ -54,7 +58,11 @@ namespace ShopApp.WebApi.Controllers
         [HttpPut]
         public async Task<ActionResult<UserProfileDto>> UpdateProfile([FromBody] UserProfileDto dto)
         {
-            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            int userId = User.GetUserId();
+            if (userId < 0)
+            {
+                return Unauthorized("Token does not match current user.");
+            }
 
             UserProfile? updated = await _profileService.UpdateProfileAsync(userId, new()
             {

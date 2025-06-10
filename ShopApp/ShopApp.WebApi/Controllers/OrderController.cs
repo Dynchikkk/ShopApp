@@ -4,7 +4,7 @@ using ShopApp.Core.Dto.Order;
 using ShopApp.Core.Models.Shop.Order;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Services;
-using System.Security.Claims;
+using ShopApp.WebApi.Extensions;
 
 namespace ShopApp.WebApi.Controllers
 {
@@ -34,7 +34,11 @@ namespace ShopApp.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderResponseDto>> CreateOrder(OrderCreateRequestDto dto)
         {
-            int userId = GetCurrentUserId();
+            int userId = User.GetUserId();
+            if (userId < 0)
+            {
+                return Unauthorized("Token does not match current user.");
+            }
             Order? order = await _orderService.CreateOrderAsync(userId, dto);
 
             return order == null
@@ -49,7 +53,11 @@ namespace ShopApp.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderResponseDto>>> GetOrders()
         {
-            int userId = GetCurrentUserId();
+            int userId = User.GetUserId();
+            if (userId < 0)
+            {
+                return Unauthorized("Token does not match current user.");
+            }
             IEnumerable<Order> orders = await _orderService.GetOrdersAsync(userId);
 
             return Ok(orders.Select(MapToDto));
@@ -74,14 +82,6 @@ namespace ShopApp.WebApi.Controllers
                     Quantity = i.Quantity
                 }).ToList()
             };
-        }
-
-        /// <summary>
-        /// Retrieves the current authenticated user's ID from the JWT claims.
-        /// </summary>
-        private int GetCurrentUserId()
-        {
-            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         }
     }
 }

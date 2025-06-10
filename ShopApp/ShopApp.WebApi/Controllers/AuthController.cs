@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShopApp.Core.Dto.User.Auth;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Services.User.Auth;
-using System.Security.Claims;
+using ShopApp.WebApi.Extensions;
 
 namespace ShopApp.WebApi.Controllers
 {
@@ -78,9 +78,8 @@ namespace ShopApp.WebApi.Controllers
         [HttpPost("refresh-token")]
         public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
         {
-            int currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-
-            if (currentUserId != request.UserId)
+            int currentUserId = User.GetUserId();
+            if (currentUserId < 0 || currentUserId != request.UserId)
             {
                 return Unauthorized("Token does not match current user.");
             }

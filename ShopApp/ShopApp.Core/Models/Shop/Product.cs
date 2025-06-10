@@ -22,11 +22,13 @@ namespace ShopApp.Core.Models.Shop
         /// Price of the product.
         /// </summary>
         [Required]
+        [Range(0, double.MaxValue, ErrorMessage = "Price should be non-negative")]
         public decimal Price { get; set; }
         /// <summary>
         /// Quantity of the product in stock.
         /// </summary>
         [Required]
+        [Range(0, double.MaxValue, ErrorMessage = "Stock should be non-negative")]
         public int Stock { get; set; }
 
         /// <summary>

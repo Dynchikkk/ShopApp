@@ -4,7 +4,7 @@ using ShopApp.Core.Dto.Cart;
 using ShopApp.Core.Models.Shop;
 using ShopApp.Core.Models.User;
 using ShopApp.Core.Services;
-using System.Security.Claims;
+using ShopApp.WebApi.Extensions;
 
 namespace ShopApp.WebApi.Controllers
 {
@@ -33,7 +33,11 @@ namespace ShopApp.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CartItemResponseDto>>> GetCart()
         {
-            int userId = GetCurrentUserId();
+            int userId = User.GetUserId();
+            if (userId < 0)
+            {
+                return Unauthorized("Token does not match current user.");
+            }
             IEnumerable<CartItem> cart = await _cartService.GetCartAsync(userId);
 
             return Ok(cart.Select(ci => new CartItemResponseDto
@@ -54,7 +58,11 @@ namespace ShopApp.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<CartItemResponseDto>> AddToCart([FromBody] CartAddItemRequestDto request)
         {
-            int userId = GetCurrentUserId();
+            int userId = User.GetUserId();
+            if (userId < 0)
+            {
+                return Unauthorized("Token does not match current user.");
+            }
             CartItem? item = await _cartService.AddToCartAsync(userId, request.ProductId, request.Quantity);
 
             return item == null
@@ -77,7 +85,11 @@ namespace ShopApp.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<CartItemResponseDto>> RemoveFromCart(int id)
         {
-            int userId = GetCurrentUserId();
+            int userId = User.GetUserId();
+            if (userId < 0)
+            {
+                return Unauthorized("Token does not match current user.");
+            }
             CartItem? removed = await _cartService.RemoveFromCartAsync(userId, id);
 
             return removed == null
@@ -90,14 +102,6 @@ namespace ShopApp.WebApi.Controllers
                     Price = removed.Product?.Price ?? 0,
                     Quantity = removed.Quantity
                 });
-        }
-
-        /// <summary>
-        /// Retrieves the current authenticated user's ID from the JWT claims.
-        /// </summary>
-        private int GetCurrentUserId()
-        {
-            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         }
     }
 }

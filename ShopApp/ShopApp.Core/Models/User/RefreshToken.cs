@@ -22,12 +22,8 @@ namespace ShopApp.Core.Models.User
         /// <summary>
         /// Expiration date of the token.
         /// </summary>
+        [Required]
         public DateTime ExpiresAt { get; set; }
-
-        /// <summary>
-        /// Indicates if the token is revoked and no longer valid.
-        /// </summary>
-        public bool IsRevoked { get; set; } = false;
 
         /// <summary>
         /// Foreign key linking to the authenticated user.
@@ -38,5 +34,10 @@ namespace ShopApp.Core.Models.User
         /// Navigation property to the associated user.
         /// </summary>
         public AuthUser? AuthUser { get; set; }
+
+        /// <summary>
+        /// Indicates if the token is revoked and no longer valid.
+        /// </summary>
+        public bool IsRevoked { get; set; } = false;
     }
 }

@@ -448,3 +448,5 @@ samples/features/sql-management-objects/src/out/CodeCoverage/CodeCoverage.config
 
 #SQLite db
 *.db
+*.db-shm
+*.db-wal
