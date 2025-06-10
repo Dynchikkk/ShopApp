@@ -1,12 +1,13 @@
 ﻿body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #f7f7f7;
+    background-color: #0b131a;
+    color: #c7d5e0;
 }
 
 header {
-    background-color: #6a1b9a;
-    color: white;
+    background-color: #171a21;
+    color: #c7d5e0;
     padding: 1rem;
 }
 
@@ -17,22 +18,27 @@ nav {
 }
 
     nav a {
-        color: white;
+        color: #c7d5e0;
         text-decoration: none;
         font-weight: bold;
+        transition: color 0.3s;
     }
+
+        nav a:hover {
+            color: #66c0f4; /* светло-голубой при наведении */
+        }
 
 main {
     max-width: 1000px;
     margin: 2rem auto;
     padding: 1rem;
-    background-color: white;
+    background-color: #171a21;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 
 h1, h2 {
-    color: #4a148c;
+    color: #66c0f4;
 }
 
 input, button, select, textarea {
@@ -41,22 +47,27 @@ input, button, select, textarea {
     width: 100%;
     box-sizing: border-box;
     font-size: 1rem;
-}
-
-button {
-    background-color: #8e24aa;
-    color: white;
-    border: none;
-    cursor: pointer;
+    background-color: #2a475e;
+    color: #c7d5e0;
+    border: 1px solid #1b2838;
     border-radius: 4px;
 }
 
+button {
+    background-color: #2a475e;
+    color: #c7d5e0;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
     button:hover {
-        background-color: #6a1b9a;
+        background-color: #1b2838;
     }
 
 .product-card {
-    border: 1px solid #ddd;
+    border: 1px solid #1b2838;
     border-radius: 4px;
     padding: 1rem;
     margin-bottom: 1rem;
