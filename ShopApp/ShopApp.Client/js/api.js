@@ -18,32 +18,20 @@ function clearTokens() {
     localStorage.removeItem("refreshToken");
 }
 
-async function api(path, method = "GET", data = null) {
-    const headers = {
-        "Content-Type": "application/json"
-    };
-
-    const token = getAccessToken();
-    if (token) headers["Authorization"] = "Bearer " + token;
-
-    const res = await fetch(`${API_BASE}/${path}`, {
-        method,
-        headers,
-        body: data ? JSON.stringify(data) : null
-    });
-
-    if (res.status === 401 && getRefreshToken()) {
-        const ok = await refreshTokens();
-        if (ok) return api(path, method, data);
+function getUserIdFromToken(token) {
+    if (!token) return null;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+    } catch {
+        return null;
     }
-
-    if (!res.ok) throw new Error(await res.text());
-    return await res.json();
 }
 
 async function refreshTokens() {
     const refreshToken = getRefreshToken();
-    const userId = parseInt(getUserIdFromToken(getAccessToken()));
+    const userId = getUserIdFromToken(getAccessToken());
+
     if (!refreshToken || !userId) return false;
 
     const res = await fetch(`${API_BASE}/auth/refresh-token`, {
@@ -62,20 +50,40 @@ async function refreshTokens() {
     return true;
 }
 
-// JWT decode (простая реализация)
-function getUserIdFromToken(token) {
-    if (!token) return null;
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload["nameid"];
-    } catch {
-        return null;
+async function api(path, method = "GET", data = null) {
+    const headers = { "Content-Type": "application/json" };
+    const token = getAccessToken();
+    if (token) headers["Authorization"] = "Bearer " + token;
+
+    let res = await fetch(`${API_BASE}/${path}`, {
+        method,
+        headers,
+        body: data ? JSON.stringify(data) : null
+    });
+
+    // Если токен протух — пробуем обновить и повторить запрос
+    if (res.status === 401 && getRefreshToken()) {
+        const refreshed = await refreshTokens();
+        if (refreshed) {
+            const newToken = getAccessToken();
+            headers["Authorization"] = "Bearer " + newToken;
+
+            res = await fetch(`${API_BASE}/${path}`, {
+                method,
+                headers,
+                body: data ? JSON.stringify(data) : null
+            });
+        }
     }
+
+    if (!res.ok) throw new Error(await res.text());
+    return await res.json();
 }
 
-// Экспортируем как глобальные
+// Экспорт глобально
 window.api = api;
 window.getAccessToken = getAccessToken;
-window.getUserIdFromToken = getUserIdFromToken;
+window.getRefreshToken = getRefreshToken;
 window.saveTokens = saveTokens;
 window.clearTokens = clearTokens;
+window.getUserIdFromToken = getUserIdFromToken;
